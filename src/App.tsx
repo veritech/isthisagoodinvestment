@@ -7,12 +7,18 @@ interface DataPoint {
     name: string,
     globalEquity: number,
     propertyEquity: number,
+    gilts: number,
 }
 
 // https://www.msci.com/documents/10199/4753a237-7f5a-4ef6-9f2b-9f46245402e6
 // AWCI return over last 10yr
+const VANGUARD_FUND_URL = "https://www.vanguardinvestor.co.uk/investments/vanguard-ftse-global-all-cap-index-fund-gbp-acc/overview";
 const VANGUARD_FEES = 0.005;
-const MSCI_AWCI_RETURN = 0.0974 - VANGUARD_FEES;
+const VANGUARD_FUND_RETURN = 0.067 - VANGUARD_FEES;
+
+// GOLD return over last 10yr
+// https://dqydj.com/inflation-adjusted-gold-return-calculator/
+const GILT_RETURN = 0.03;
 
 interface Property {
     value: number,
@@ -39,12 +45,12 @@ interface Props {
 
 class App extends React.Component<Props, State> {
 
+    numberFormatter: Intl.NumberFormat;
 
     constructor(props: Props) {
         super(props);
 
-        // useState();
-
+        this.numberFormatter = new Intl.NumberFormat('en-gb', {maximumSignificantDigits: 2});
 
         /// Initial values
         this.state = {
@@ -61,13 +67,37 @@ class App extends React.Component<Props, State> {
         }
     }
 
+    /// https://www.gov.uk/stamp-duty-land-tax/residential-property-rates
     stampDuty(): number {
+        var remainingValue = this.state.propertyValue;
         var duty = 0;
-        if (this.state.propertyValue > 500000) {
-            duty += (this.state.propertyValue - 500000) * 0.05;
-        } else {
-            duty += this.state.propertyValue * 0.03;
+
+        const TOP = 1500000;
+        const MID = 925000;
+        const BOTTOM = 250000;
+
+        if (remainingValue > TOP) {
+            const tier = remainingValue - TOP;
+            remainingValue = TOP;
+            duty += tier * 0.15;
         }
+
+        if (remainingValue > MID) {
+            const tier = remainingValue - MID;
+            remainingValue = MID;
+            duty += tier * 0.13;
+        }
+
+        if (remainingValue > BOTTOM) {
+            const tier = remainingValue - BOTTOM;
+            remainingValue = BOTTOM;
+            duty += tier * 0.08;
+        }
+
+        if (remainingValue > 0) {
+            duty += remainingValue * 0.03;
+        }
+
         return duty;
     }
 
@@ -89,58 +119,94 @@ class App extends React.Component<Props, State> {
         return annualRentalIncome
     }
 
-    grossYield(): number {
-        return 0;
+    roi(): number {
+        return this.annualIncomeAfterExpenses() / this.initialInvestmentPlusPurchaseCosts();
     }
 
-    generateData(): DataPoint[] {
+    grossYield(): number {
+        return (this.state.propertyRent * 12) / this.state.propertyValue;
+    }
+
+    netYield(): number {
+        return this.annualIncomeAfterExpenses() / this.state.propertyValue;
+    }
+
+    purchaseCosts(): number {
+        return this.stampDuty() + this.state.mortgageFees + this.state.legalCosts;
+    }
+
+    initialInvestmentPlusPurchaseCosts(): number {
+        return this.initialInvestment() + this.purchaseCosts();
+    }
+
+    dataPoints(): DataPoint[] {
         let data: DataPoint[] = [];
 
         /// Initial deposit
         var globalEquity = this.initialInvestment();
         var propertyValue = this.state.propertyValue;
-
+        var giltsValue = this.initialInvestment();
         /// Outstanding debt
         var debt = this.totalDebt();
 
         const annualRentalIncome = this.annualIncomeAfterExpenses();
         /// One off Purchase costs
-        var purchaseCosts = this.stampDuty() + this.state.mortgageFees;
-
-        console.log("values", propertyValue, debt, purchaseCosts, annualRentalIncome);
+        var purchaseCosts = this.purchaseCosts();
 
         for (var i = 0; i < 25; i++) {
             data.push({
                 name: "Year " + (i + 1),
                 propertyEquity: (propertyValue - purchaseCosts - debt),
+                gilts: giltsValue,
                 globalEquity,
             });
 
+            giltsValue = giltsValue * (GILT_RETURN + 1);
             propertyValue = propertyValue * (this.state.housePriceGrowth + 1);
-            globalEquity = globalEquity * (MSCI_AWCI_RETURN + 1);
+            globalEquity = globalEquity * (VANGUARD_FUND_RETURN + 1);
         }
 
         return data;
     }
 
-    render() {
-        var data = this.generateData();
+    currencyFormat(value: number | null): string {
+        if (value == null) return "";
+        // return "£" + value;
+        return value + "";
+    }
 
+    percentFormat(value: number | null): string {
+        if (value == null) return "";
+        return this.numberFormatter.format(value) + "%";
+    }
+
+    render() {
         return (
             <div className="container">
                 <div className="row">
-                    <div className="col-sm">
-                        <h2>Basics</h2>
+                    <div className="col-12">
+                        <h1>Is this a good investment?</h1>
+                        <small>Calculate whether an investment property is a good investment relative to others</small>
+                    </div>
+                </div>
+                <div className="row mt-5">
+                    <div className="col-sm-12 col-md-4">
+                        <h4>Basics</h4>
                         <LabelledValue
                             label="Property Value"
                             value={this.state.propertyValue}
+                            format={this.currencyFormat.bind(this)}
                             onChange={v => {
                                 this.setState({propertyValue: v})
                             }}
                         />
                         <LabelledValue
-                            label="Deposit"
+                            label="Deposit (% of property value)"
                             value={this.state.propertyDeposit}
+                            format={this.percentFormat.bind(this)}
+                            min={0}
+                            max={1.0}
+                            step={0.01}
                             onChange={v => {
                                 this.setState({propertyDeposit: v})
                             }}
@@ -148,23 +214,35 @@ class App extends React.Component<Props, State> {
                         <LabelledValue
                             label="Monthly Rental"
                             value={this.state.propertyRent}
+                            format={this.currencyFormat.bind(this)}
                             onChange={v => {
                                 this.setState({propertyRent: v})
                             }}
                         />
-                    </div>
-                    <div className="col-sm">
-                        <h2>Transaction Expenses</h2>
                         <LabelledValue
-                            label="SDLT"
-                            value={this.stampDuty()}
+                            label="Annual House price growth"
+                            value={this.state.housePriceGrowth}
+                            format={this.percentFormat.bind(this)}
+                            min={0}
+                            max={1.0}
+                            step={0.01}
                             onChange={v => {
-                                this.setState({propertyRent: v})
+                                this.setState({housePriceGrowth: v})
                             }}
+                        />
+                    </div>
+                    <div className="col-sm-12 col-md-4">
+                        <h4>Transaction Expenses</h4>
+                        <LabelledValue
+                            label="Stamp Duty"
+                            value={this.stampDuty()}
+                            format={this.currencyFormat.bind(this)}
+                            readonly={true}
                         />
                         <LabelledValue
                             label="Legal costs"
                             value={this.state.legalCosts}
+                            format={this.currencyFormat.bind(this)}
                             onChange={v => {
                                 this.setState({legalCosts: v})
                             }}
@@ -172,46 +250,98 @@ class App extends React.Component<Props, State> {
                         <LabelledValue
                             label="Mortgage Arrangement fees"
                             value={this.state.mortgageFees}
+                            format={this.currencyFormat.bind(this)}
                             onChange={v => {
                                 this.setState({mortgageFees: v})
                             }}
                         />
                     </div>
-                    <div className="col-sm">
-                        <h2>Ongoing expenses</h2>
+                    <div className="col-sm-12 col-md-4">
+                        <h4>Ongoing expenses</h4>
                         <LabelledValue
-                            label="Mortgage Interest Rate"
+                            label="Mortgage Interest Rate (%)"
                             value={this.state.mortgageRate}
+                            format={this.percentFormat.bind(this)}
+                            min={0}
+                            max={1.0}
+                            step={0.01}
                             onChange={v => {
                                 this.setState({mortgageRate: v})
                             }}
                         />
                         <LabelledValue
-                            label="Agent fees"
+                            label="Agent fees (% of rent)"
                             value={this.state.agentFees}
+                            format={this.percentFormat.bind(this)}
+                            min={0}
+                            max={1.0}
+                            step={0.01}
                             onChange={v => {
                                 this.setState({agentFees: v})
                             }}
                         />
                         <LabelledValue
-                            label="Maintenance"
+                            label="Maintenance (% of rent)"
                             value={this.state.maintenance}
+                            format={this.percentFormat.bind(this)}
+                            min={0}
+                            max={1.0}
+                            step={0.01}
                             onChange={v => {
                                 this.setState({maintenance: v})
                             }}
                         />
                     </div>
-                    <h1>Return on Investment</h1>
-                    <ResponsiveContainer width="100%" aspect={3}>
-                        <LineChart data={data}>
-                            <XAxis dataKey="name"/>
-                            <YAxis/>
-                            <Legend/>
-                            <ReferenceLine y={this.initialInvestment()} label="Break-even" strokeDasharray="3 3"/>
-                            <Line name="BTL" dataKey="propertyEquity" stroke="#F00" strokeWidth={2}/>
-                            <Line name="MSCI AWCI" dataKey="globalEquity" stroke="#00F" strokeWidth={2}/>
-                        </LineChart>
-                    </ResponsiveContainer>
+                </div>
+                <div className="row mt-5">
+                    <div className="col-12">
+                        <ResponsiveContainer width="100%" aspect={2}>
+                            <LineChart data={this.dataPoints()}>
+                                <XAxis dataKey="name"/>
+                                <YAxis/>
+                                <Legend/>
+                                <ReferenceLine y={this.initialInvestment()} label="Break-even" strokeDasharray="3 3"/>
+                                <Line name="Gilts (UK Bonds)" dataKey="gilts" stroke="#0F0" strokeWidth={2}/>
+                                <Line name="BTL" dataKey="propertyEquity" stroke="#F00" strokeWidth={2}/>
+                                <Line name="Vanguard Global All Cap" dataKey="globalEquity" stroke="#00F" strokeWidth={2}/>
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+                <div className="row mt-5">
+                    <div className="col-sm-12 col-md-4">
+                        <h2>Buy to Let</h2>
+                        <p>This prospective investment has:</p>
+                        <ul>
+                            <li>ROI of <strong>{this.numberFormatter.format(this.roi() * 100)}%</strong> (annual return/ initial investment)</li>
+                            <li>Gross yield of <strong>{this.numberFormatter.format(this.grossYield() * 100)}</strong></li>
+                            <li>Net yield of <strong>{this.numberFormatter.format(this.netYield() * 100)}</strong></li>
+                        </ul>
+
+                        <p>It would generate <strong>£{this.numberFormatter.format(this.annualIncomeAfterExpenses())}/year</strong>, or <strong>£{this.numberFormatter.format(this.annualIncomeAfterExpenses()/12)}/month</strong> in profits</p>
+                        <p>This model doesn't account for:</p>
+                        <ul>
+                            <li><strong>Tax</strong></li>
+                            <li>periodic remortgaging costs</li>
+                            <li>Voids</li>
+                            <li>Agent letting fees</li>
+                            <li>Initial remodelling costs if any</li>
+                        </ul>
+                    </div>
+                    <div className="col-sm-12 col-md-4">
+                        <h2>Global Equity</h2>
+                        <p>This model assumes that you invest your property deposit in <a href={VANGUARD_FUND_URL}>Vanguard FTSE Global all cap index fund</a>.
+                            Specifically the accumulation fund, which will re-invest company dividends</p>
+                        <p>It also uses the the annualized growth rate over the last 5 years which is <strong>{this.numberFormatter.format(VANGUARD_FUND_RETURN* 100)}%</strong></p>
+                        <p>This model does not account for:</p>
+                        <ul>
+                            <li>Market crashes</li>
+                        </ul>
+                    </div>
+                    <div className="col-sm-12 col-md-4">
+                        <h2>Gilts</h2>
+                        <p>Gilts are debt issued by the UK government to fund itself. While they aren't without risk they form one of the safest forms of investment.</p>
+                    </div>
                 </div>
             </div>
         );
