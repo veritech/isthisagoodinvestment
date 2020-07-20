@@ -11,19 +11,35 @@ interface Props {
     value: number,
     onChange?: (newValue: number) => void,
     readonly?: boolean,
-    format: (value: number| null) => string,
+    format?: (value: number) => string,
+    parse?: (value: string) => number,
     max?: BoundsFunctionProp,
     min?: BoundsFunctionProp,
     step?: number | ((component: NumericInput, direction: string) => number | undefined),
 }
 
 class LabelledValue extends React.Component<Props, State> {
-
-
     constructor(props: Props) {
         super(props);
 
         this.state = props;
+    }
+
+    formatValue(value: number| null): string {
+        if (this.props.format && value) {
+            return this.props.format(value);
+        }
+
+        if (value == null) return "";
+        return value.toString();
+    }
+
+    parseValue(value: string| null): number | null {
+        if (this.props.parse && value) {
+            return this.props.parse(value);
+        }
+        if (value == null) return null;
+        return parseFloat(value);
     }
 
     valueDidChange(value: number | null) {
@@ -42,7 +58,9 @@ class LabelledValue extends React.Component<Props, State> {
                 <NumericInput
                     readOnly={this.props.readonly ? true : false}
                     onChange={this.valueDidChange.bind(this)}
-                    format={this.props.format.bind(this)}
+                    format={this.formatValue.bind(this)}
+                    parse={this.parseValue.bind(this)}
+                    precision={2}
                     value={this.props.value}
                     max={this.props.max}
                     min={this.props.min}
