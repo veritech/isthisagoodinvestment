@@ -1,12 +1,14 @@
 import React from 'react';
 import './App.css';
-import {Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, XAxis, YAxis} from 'recharts';
+import {CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, XAxis, YAxis} from 'recharts';
 import LabelledValue from "./LabelledValue";
+import AssetTable from "./AssetTable";
 
-interface DataPoint {
+export interface DataPoint {
     name: string,
     globalEquity: number,
     propertyEquity: number,
+    propertyRetainedEarnings: number,
     gilts: number,
 }
 
@@ -149,20 +151,22 @@ class App extends React.Component<Props, State> {
         /// Outstanding debt
         var debt = this.totalDebt();
 
-        const annualRentalIncome = this.annualIncomeAfterExpenses();
         /// One off Purchase costs
         var purchaseCosts = this.purchaseCosts();
+        var propertyRetainedEarnings = 0;
 
         for (var i = 0; i < 25; i++) {
             data.push({
                 name: "Year " + (i + 1),
                 propertyEquity: (propertyValue - purchaseCosts - debt),
+                propertyRetainedEarnings,
                 gilts: giltsValue,
                 globalEquity,
             });
 
             giltsValue = giltsValue * (GILT_RETURN + 1);
             propertyValue = propertyValue * (this.state.housePriceGrowth + 1);
+            propertyRetainedEarnings += this.annualIncomeAfterExpenses();
             globalEquity = globalEquity * (VANGUARD_FUND_RETURN + 1);
         }
 
@@ -181,6 +185,7 @@ class App extends React.Component<Props, State> {
     }
 
     render() {
+        const dataPoints = this.dataPoints();
         return (
             <div className="container">
                 <div className="row">
@@ -296,16 +301,21 @@ class App extends React.Component<Props, State> {
                 <div className="row mt-5">
                     <div className="col-12">
                         <ResponsiveContainer width="100%" aspect={2}>
-                            <LineChart data={this.dataPoints()}>
+                            <LineChart data={dataPoints}>
                                 <XAxis dataKey="name"/>
                                 <YAxis/>
+                                <CartesianGrid strokeDasharray="3 3" />
                                 <Legend/>
                                 <ReferenceLine y={this.initialInvestment()} label="Break-even" strokeDasharray="3 3"/>
+                                <Line name="BTL Equity" dataKey="propertyEquity" stroke="#F00" strokeWidth={2}/>
+                                <Line name="BTL Income" dataKey="propertyRetainedEarnings" stroke="#900" strokeWidth={2}/>
                                 <Line name="Gilts (UK Bonds)" dataKey="gilts" stroke="#0F0" strokeWidth={2}/>
-                                <Line name="BTL" dataKey="propertyEquity" stroke="#F00" strokeWidth={2}/>
                                 <Line name="Vanguard Global All Cap" dataKey="globalEquity" stroke="#00F" strokeWidth={2}/>
                             </LineChart>
                         </ResponsiveContainer>
+                    </div>
+                    <div className="col-12">
+                        <AssetTable data={dataPoints} />
                     </div>
                 </div>
                 <div className="row mt-5">
