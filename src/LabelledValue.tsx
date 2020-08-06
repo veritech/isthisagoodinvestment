@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import NumericInput, {BoundsFunctionProp} from 'react-numeric-input';
+import InputNumber from 'rc-input-number';
 
 interface State {
     value: number
@@ -13,9 +13,9 @@ interface Props {
     readonly?: boolean,
     format?: (value: number) => string,
     parse?: (value: string) => number,
-    max?: BoundsFunctionProp,
-    min?: BoundsFunctionProp,
-    step?: number | ((component: NumericInput, direction: string) => number | undefined),
+    max?: number,
+    min?: number,
+    step?: string | number | undefined,
 }
 
 class LabelledValue extends React.Component<Props, State> {
@@ -25,25 +25,30 @@ class LabelledValue extends React.Component<Props, State> {
         this.state = props;
     }
 
-    formatValue(value: number| null): string {
-        if (this.props.format && value) {
-            return this.props.format(value);
+    formatValue(value: string| number| undefined): string {
+        if (value === undefined) return "";
+
+        if (this.props.format) {
+            if (typeof value == "number") {
+                return this.props.format(value);
+            } else {
+                return this.props.format(this.parseValue(value));
+            }
         }
 
-        if (value == null) return "";
         return value.toString();
     }
 
-    parseValue(value: string| null): number | null {
+    parseValue(value: string| undefined): number {
         if (this.props.parse && value) {
             return this.props.parse(value);
         }
-        if (value == null) return null;
+        if (value == null) return 0;
         return parseFloat(value);
     }
 
-    valueDidChange(value: number | null) {
-        if (value == null) { return }
+    valueDidChange(value: string | number | undefined) {
+        if (typeof value != "number") { return }
         this.setState({ value });
 
         if (this.props.onChange == null) {return}
@@ -55,17 +60,17 @@ class LabelledValue extends React.Component<Props, State> {
             <div className="row">
                 <div className="col-auto"><p>{this.props.label}</p></div>
                 <div className="col-auto">
-                <NumericInput
-                    readOnly={this.props.readonly ? true : false}
-                    onChange={this.valueDidChange.bind(this)}
-                    format={this.formatValue.bind(this)}
-                    parse={this.parseValue.bind(this)}
-                    precision={2}
-                    value={this.props.value}
-                    max={this.props.max}
-                    min={this.props.min}
-                    step={this.props.step}
-                />
+                    <InputNumber
+                        step={this.props.step}
+                        min={this.props.min}
+                        max={this.props.max}
+                        precision={2}
+                        value={this.props.value}
+                        formatter={this.formatValue.bind(this)}
+                        parser={this.parseValue.bind(this)}
+                        onChange={this.valueDidChange.bind(this)}
+                        readOnly={this.props.readonly ? true : false}
+                    />
                 </div>
             </div>
         )
