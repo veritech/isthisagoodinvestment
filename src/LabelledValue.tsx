@@ -27,22 +27,21 @@ class LabelledValue extends React.Component<Props, State> {
 
     formatValue(value: string| number| undefined): string {
         if (value === undefined) return "";
-
-        if (this.props.format) {
-            if (typeof value == "number") {
-                return this.props.format(value);
-            } else {
-                return this.props.format(this.parseValue(value));
-            }
-        }
+        // if (this.props.format) {
+        //     if (typeof value == "number") {
+        //         return this.props.format(value);
+        //     } else {
+        //         return this.props.format(this.parseValue(value));
+        //     }
+        // }
 
         return value.toString();
     }
 
     parseValue(value: string| undefined): number {
-        if (this.props.parse && value) {
-            return this.props.parse(value);
-        }
+        // if (this.props.parse && value) {
+        //     return this.props.parse(value);
+        // }
         if (value == null) return 0;
         return parseFloat(value);
     }
