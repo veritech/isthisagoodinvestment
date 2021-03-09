@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FormEvent} from 'react';
 import './App.css';
 import NumericInput from "react-numeric-input";
 
@@ -25,14 +25,12 @@ class LabelledValue extends React.Component<Props, State> {
         this.state = props;
     }
 
-    formatValue(value: number| null): string {
-        if (value == null) return "";
+    formatValue(possibleValue: number| null): string {
+        const value = possibleValue || this.state.value;
+        if (value == null) return ""; // This should only happen in the initial state
+
         if (this.props.format) {
-            if (typeof value == "number") {
-                return this.props.format(value);
-            } else {
-                return this.props.format(this.parseValue(value));
-            }
+            return this.props.format(value);
         }
         return value.toString();
     }
@@ -44,8 +42,11 @@ class LabelledValue extends React.Component<Props, State> {
         return 0;
     }
 
-    valueDidChange(value: number | null, stringValue: string, input: HTMLInputElement) {
-        if (typeof value != "number") { return }
+    valueDidChange(event: FormEvent<HTMLInputElement>) {
+        if (event.currentTarget.value != null) return;
+
+        const value = this.parseValue(event.currentTarget.value);
+
         this.setState({ value });
 
         if (this.props.onChange == null) {return}
@@ -60,6 +61,8 @@ class LabelledValue extends React.Component<Props, State> {
                 </div>
                 <div className="col-sm-auto col-12">
                     <NumericInput
+                        strict={true}
+                        mobile={true}
                         min={this.props.min}
                         max={this.props.max}
                         step={this.props.step}
@@ -67,7 +70,7 @@ class LabelledValue extends React.Component<Props, State> {
                         value={this.props.value}
                         format={this.formatValue.bind(this)}
                         parse={this.parseValue.bind(this)}
-                        onChange={this.valueDidChange.bind(this)}
+                        onInput={this.valueDidChange.bind(this)}
                         readOnly={this.props.readonly ? true : false}
                     />
                 </div>

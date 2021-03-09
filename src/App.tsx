@@ -341,6 +341,7 @@ class App extends React.Component<Props, State> {
                 <div className="row mt-5">
                     <div className="col-12">
                         <h3>Summary</h3>
+                        <small className="d-block d-md-none jumbotron"><strong>Rotate your device for a more complete summary with tables & graphs!</strong></small>
                     </div>
                 </div>
                 <AssetDetails
@@ -353,15 +354,13 @@ class App extends React.Component<Props, State> {
                     vanguardFundUrl={VANGUARD_FUND_URL}
                     vanguardFundReturn={VANGUARD_FUND_RETURN}
                 />
-                <div className="row">
+                <div className="row d-none d-sm-block">
                     <div className="col-12">
                         <h4>How does it compare?</h4>
                         <AssetTable
                             format={this.currencyFormat.bind(this)}
                             data={dataPoints}/>
                     </div>
-                </div>
-                <div className="row d-none d-sm-block">
                     <div className="col-12">
                         <ResponsiveContainer width="100%" aspect={2}>
                             <LineChart data={dataPoints}>
