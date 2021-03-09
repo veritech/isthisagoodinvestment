@@ -46,13 +46,13 @@ class AssetTable extends React.Component<Props, State> {
                     })}
                 </tr>
                 <tr>
-                    <td>Propery Equity</td>
+                    <td>Property Equity</td>
                     { this.dataSeries(v => v.propertyEquity).map( v => {
                         return <td>{ this.props.format(v) }</td>
                     })}
                 </tr>
                 <tr>
-                    <td>Propery Income</td>
+                    <td>Property Income</td>
                     { this.dataSeries(v => v.propertyRetainedEarnings).map( v => {
                         return <td>{ this.props.format(v) }</td>
                     })}

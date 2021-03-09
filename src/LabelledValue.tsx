@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import InputNumber from 'rc-input-number';
+import NumericInput from "react-numeric-input";
 
 interface State {
     value: number
@@ -13,9 +13,9 @@ interface Props {
     readonly?: boolean,
     format?: (value: number) => string,
     parse?: (value: string) => number,
-    max?: number,
-    min?: number,
-    step?: string | number | undefined,
+    max?: NumericInput.BoundsFunctionProp,
+    min?: NumericInput.BoundsFunctionProp,
+    step?: number | undefined,
 }
 
 class LabelledValue extends React.Component<Props, State> {
@@ -25,28 +25,26 @@ class LabelledValue extends React.Component<Props, State> {
         this.state = props;
     }
 
-    formatValue(value: string| number| undefined): string {
-        if (value === undefined) return "";
-        // if (this.props.format) {
-        //     if (typeof value == "number") {
-        //         return this.props.format(value);
-        //     } else {
-        //         return this.props.format(this.parseValue(value));
-        //     }
-        // }
-
+    formatValue(value: number| null): string {
+        if (value == null) return "";
+        if (this.props.format) {
+            if (typeof value == "number") {
+                return this.props.format(value);
+            } else {
+                return this.props.format(this.parseValue(value));
+            }
+        }
         return value.toString();
     }
 
-    parseValue(value: string| undefined): number {
-        // if (this.props.parse && value) {
-        //     return this.props.parse(value);
-        // }
-        if (value == null) return 0;
-        return parseFloat(value);
+    parseValue(value: string): number {
+        if (this.props.parse && value) {
+            return this.props.parse(value);
+        }
+        return 0;
     }
 
-    valueDidChange(value: string | number | undefined) {
+    valueDidChange(value: number | null, stringValue: string, input: HTMLInputElement) {
         if (typeof value != "number") { return }
         this.setState({ value });
 
@@ -56,17 +54,19 @@ class LabelledValue extends React.Component<Props, State> {
 
     public render() {
         return (
-            <div className="row">
-                <div className="col-auto"><p>{this.props.label}</p></div>
-                <div className="col-auto">
-                    <InputNumber
-                        step={this.props.step}
+            <div className="row mb-sm-4 mb-md-0">
+                <div className="col-sm-auto col-md-12">
+                    <p className="mb-0">{this.props.label}</p>
+                </div>
+                <div className="col-sm-auto col-12">
+                    <NumericInput
                         min={this.props.min}
                         max={this.props.max}
+                        step={this.props.step}
                         precision={2}
                         value={this.props.value}
-                        formatter={this.formatValue.bind(this)}
-                        parser={this.parseValue.bind(this)}
+                        format={this.formatValue.bind(this)}
+                        parse={this.parseValue.bind(this)}
                         onChange={this.valueDidChange.bind(this)}
                         readOnly={this.props.readonly ? true : false}
                     />

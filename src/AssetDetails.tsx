@@ -33,9 +33,9 @@ export class AssetDetails extends React.Component<Props, State> {
 
     render() {
         return (
-            <div className="row mt-5">
+            <div className="row">
                 <div className="col-sm-12 col-md-4">
-                    <h2>Buy to Let</h2>
+                    <h4>Buy to Let</h4>
                     <p>This prospective investment has:</p>
                     <ul>
                         <li>ROI of <strong>{this.percentFormat(this.props.roi)}</strong> (annual return/
@@ -53,14 +53,14 @@ export class AssetDetails extends React.Component<Props, State> {
                     <p>This model doesn't account for:</p>
                     <ul>
                         <li><strong>Tax</strong></li>
-                        <li>periodic remortgaging costs</li>
-                        <li>Voids</li>
-                        <li>Agent letting fees</li>
+                        <li>Periodic remortgaging costs</li>
+                        <li>Periodic agent letting fees (eg. First months rent)</li>
+                        <li>Rental Voids</li>
                         <li>Initial remodelling costs if any</li>
                     </ul>
                 </div>
                 <div className="col-sm-12 col-md-4">
-                    <h2>Global Equity</h2>
+                    <h4>Global Equity</h4>
                     <p>This model assumes that you invest your property deposit in <a href={this.props.vanguardFundUrl}>Vanguard
                         FTSE Global all cap index fund</a>.
                         Specifically the accumulation fund, which will re-invest company dividends</p>
@@ -72,7 +72,7 @@ export class AssetDetails extends React.Component<Props, State> {
                     </ul>
                 </div>
                 <div className="col-sm-12 col-md-4">
-                    <h2>Gilts</h2>
+                    <h4>Gilts</h4>
                     <p>Gilts are debt issued by the UK government to fund itself. While they aren't without risk
                         they form one of the safest forms of investment.</p>
                 </div>

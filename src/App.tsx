@@ -216,15 +216,15 @@ class App extends React.Component<Props, State> {
     render() {
         const dataPoints = this.dataPoints();
         return (
-            <div className="container">
-                <div className="row">
+            <div className="container ">
+                <div className="row jumbotron">
                     <div className="col-12">
                         <h1>Is this a good investment?</h1>
                         <small>Calculate whether an investment property is a good investment relative to others</small>
                     </div>
                 </div>
                 <div className="row mt-5">
-                    <div className="col-sm-12 col-md-4">
+                    <div className="col-sm-12 col-md-4 mb-4">
                         <h4>Basics</h4>
                         <LabelledValue
                             label="Property Value"
@@ -270,7 +270,7 @@ class App extends React.Component<Props, State> {
                             }}
                         />
                     </div>
-                    <div className="col-sm-12 col-md-4">
+                    <div className="col-sm-12 col-md-4 mb-4">
                         <h4>Transaction Expenses</h4>
                         <LabelledValue
                             label="Stamp Duty"
@@ -340,6 +340,29 @@ class App extends React.Component<Props, State> {
                 </div>
                 <div className="row mt-5">
                     <div className="col-12">
+                        <h3>Summary</h3>
+                    </div>
+                </div>
+                <AssetDetails
+                    percentFormat={this.percentFormat.bind(this)}
+                    currencyFormat={this.currencyFormat.bind(this)}
+                    grossYield={this.grossYield()}
+                    netYield={this.netYield()}
+                    roi={this.roi()}
+                    annualIncomeAfterExpenses={this.annualIncomeAfterExpenses()}
+                    vanguardFundUrl={VANGUARD_FUND_URL}
+                    vanguardFundReturn={VANGUARD_FUND_RETURN}
+                />
+                <div className="row">
+                    <div className="col-12">
+                        <h4>How does it compare?</h4>
+                        <AssetTable
+                            format={this.currencyFormat.bind(this)}
+                            data={dataPoints}/>
+                    </div>
+                </div>
+                <div className="row d-none d-sm-block">
+                    <div className="col-12">
                         <ResponsiveContainer width="100%" aspect={2}>
                             <LineChart data={dataPoints}>
                                 <XAxis dataKey="name"/>
@@ -368,23 +391,6 @@ class App extends React.Component<Props, State> {
                         </ResponsiveContainer>
                     </div>
                 </div>
-                <div className="row mt-5">
-                    <div className="col-12">
-                        <AssetTable
-                            format={this.currencyFormat.bind(this)}
-                            data={dataPoints}/>
-                    </div>
-                </div>
-                <AssetDetails
-                    percentFormat={this.percentFormat.bind(this)}
-                    currencyFormat={this.currencyFormat.bind(this)}
-                    grossYield={this.grossYield()}
-                    netYield={this.netYield()}
-                    roi={this.roi()}
-                    annualIncomeAfterExpenses={this.annualIncomeAfterExpenses()}
-                    vanguardFundUrl={VANGUARD_FUND_URL}
-                    vanguardFundReturn={VANGUARD_FUND_RETURN}
-                />
             </div>
         );
     }
