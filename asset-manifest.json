@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/isthisagoodinvestment/static/css/main.27fd15f6.chunk.css",
-    "main.js": "/isthisagoodinvestment/static/js/main.d2cf922d.chunk.js",
-    "main.js.map": "/isthisagoodinvestment/static/js/main.d2cf922d.chunk.js.map",
+    "main.js": "/isthisagoodinvestment/static/js/main.e9ee4507.chunk.js",
+    "main.js.map": "/isthisagoodinvestment/static/js/main.e9ee4507.chunk.js.map",
     "runtime-main.js": "/isthisagoodinvestment/static/js/runtime-main.5c365a98.js",
     "runtime-main.js.map": "/isthisagoodinvestment/static/js/runtime-main.5c365a98.js.map",
-    "static/js/2.c8706a5e.chunk.js": "/isthisagoodinvestment/static/js/2.c8706a5e.chunk.js",
-    "static/js/2.c8706a5e.chunk.js.map": "/isthisagoodinvestment/static/js/2.c8706a5e.chunk.js.map",
+    "static/js/2.4c87ac54.chunk.js": "/isthisagoodinvestment/static/js/2.4c87ac54.chunk.js",
+    "static/js/2.4c87ac54.chunk.js.map": "/isthisagoodinvestment/static/js/2.4c87ac54.chunk.js.map",
     "index.html": "/isthisagoodinvestment/index.html",
-    "precache-manifest.3593565719feba2f49f34c0b854bddef.js": "/isthisagoodinvestment/precache-manifest.3593565719feba2f49f34c0b854bddef.js",
+    "precache-manifest.7828efa6e0922a3c445cfe59b923da82.js": "/isthisagoodinvestment/precache-manifest.7828efa6e0922a3c445cfe59b923da82.js",
     "service-worker.js": "/isthisagoodinvestment/service-worker.js",
     "static/css/main.27fd15f6.chunk.css.map": "/isthisagoodinvestment/static/css/main.27fd15f6.chunk.css.map",
-    "static/js/2.c8706a5e.chunk.js.LICENSE.txt": "/isthisagoodinvestment/static/js/2.c8706a5e.chunk.js.LICENSE.txt"
+    "static/js/2.4c87ac54.chunk.js.LICENSE.txt": "/isthisagoodinvestment/static/js/2.4c87ac54.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.5c365a98.js",
-    "static/js/2.c8706a5e.chunk.js",
+    "static/js/2.4c87ac54.chunk.js",
     "static/css/main.27fd15f6.chunk.css",
-    "static/js/main.d2cf922d.chunk.js"
+    "static/js/main.e9ee4507.chunk.js"
   ]
 }
