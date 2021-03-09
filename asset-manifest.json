@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/isthisagoodinvestment/static/css/main.27fd15f6.chunk.css",
-    "main.js": "/isthisagoodinvestment/static/js/main.1cf450f5.chunk.js",
-    "main.js.map": "/isthisagoodinvestment/static/js/main.1cf450f5.chunk.js.map",
+    "main.js": "/isthisagoodinvestment/static/js/main.fe3b9c52.chunk.js",
+    "main.js.map": "/isthisagoodinvestment/static/js/main.fe3b9c52.chunk.js.map",
     "runtime-main.js": "/isthisagoodinvestment/static/js/runtime-main.5c365a98.js",
     "runtime-main.js.map": "/isthisagoodinvestment/static/js/runtime-main.5c365a98.js.map",
     "static/js/2.4c87ac54.chunk.js": "/isthisagoodinvestment/static/js/2.4c87ac54.chunk.js",
     "static/js/2.4c87ac54.chunk.js.map": "/isthisagoodinvestment/static/js/2.4c87ac54.chunk.js.map",
     "index.html": "/isthisagoodinvestment/index.html",
-    "precache-manifest.99057d30b28048f1bf446116c90c28b8.js": "/isthisagoodinvestment/precache-manifest.99057d30b28048f1bf446116c90c28b8.js",
+    "precache-manifest.2a5e009d9d8f02723b24b95331ac841e.js": "/isthisagoodinvestment/precache-manifest.2a5e009d9d8f02723b24b95331ac841e.js",
     "service-worker.js": "/isthisagoodinvestment/service-worker.js",
     "static/css/main.27fd15f6.chunk.css.map": "/isthisagoodinvestment/static/css/main.27fd15f6.chunk.css.map",
     "static/js/2.4c87ac54.chunk.js.LICENSE.txt": "/isthisagoodinvestment/static/js/2.4c87ac54.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.5c365a98.js",
     "static/js/2.4c87ac54.chunk.js",
     "static/css/main.27fd15f6.chunk.css",
-    "static/js/main.1cf450f5.chunk.js"
+    "static/js/main.fe3b9c52.chunk.js"
   ]
 }
