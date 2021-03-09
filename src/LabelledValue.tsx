@@ -61,8 +61,6 @@ class LabelledValue extends React.Component<Props, State> {
                 </div>
                 <div className="col-sm-auto col-12">
                     <NumericInput
-                        strict={true}
-                        mobile={true}
                         min={this.props.min}
                         max={this.props.max}
                         step={this.props.step}
